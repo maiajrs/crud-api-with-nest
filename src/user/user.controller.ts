@@ -27,41 +27,48 @@ export class UserController {
   }
 
   @Get(':id')
-  async showOne(@Param() params) {
+  async showOne(@Param('id') id: string) {
+    const user = await this.userService.showOne(id);
     return {
-      params,
+      user,
     };
   }
 
   @Get()
   async showAll() {
+    const users = await this.userService.showAll();
     return {
-      users: [],
+      users,
     };
   }
 
   @Put(':id')
-  async update(@Body() { name, email, password }: UpdateUser, @Param() params) {
-    return {
-      name,
-      email,
-      password,
-      params,
-    };
+  async update(
+    @Body() { name, email, password }: UpdateUser,
+    @Param('id') id: string,
+  ) {
+    const user = await this.userService.update(id, { name, email, password });
+    return { user };
   }
 
   @Patch(':id')
-  async partialUpdate(@Body() body: UpdatePartialUser, @Param() params) {
+  async partialUpdate(
+    @Body() { name, email, password }: UpdatePartialUser,
+    @Param('id') id: string,
+  ) {
+    const user = await this.userService.partialUpdate(id, {
+      name,
+      email,
+      password,
+    });
+
     return {
-      ...body,
-      params,
+      user,
     };
   }
 
   @Delete(':id')
-  async delete(@Param('id', ParseIntPipe) id: string) {
-    return {
-      id,
-    };
+  async delete(@Param('id') id: string) {
+    return await this.userService.delete(id);
   }
 }
